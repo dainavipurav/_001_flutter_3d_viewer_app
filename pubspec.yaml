@@ -1,0 +1,32 @@
+name: threed_viewer
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_inappwebview: ^6.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/html/
+    - assets/images/
+    - assets/html/three_js_demo/
+    - assets/html/three_js_demo/anode_modules/
+    - assets/html/three_js_demo/models/
+    - assets/html/three_js_demo/models/bird/
+    - assets/html/three_js_demo/models/chopper/
+    - assets/html/three_js_demo/models/chopper/Textures/
+    - assets/html/three_js_demo/textures/
