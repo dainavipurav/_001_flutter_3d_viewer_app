@@ -145,7 +145,7 @@ class Home extends ConsumerWidget {
     // if (ref.read(webViewControllerProvider.notifier).state != null) return;
     ref.read(webViewControllerProvider.notifier).state!.evaluateJavascript(
       source: """
-            loadFileUsingByteArray(new Uint8Array(${jsByteArray.toString()}));
+            loadFileFromDevice(new Uint8Array(${jsByteArray.toString()}));
           """,
     );
   }
