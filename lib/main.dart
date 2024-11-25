@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:threed_viewer/threed_app.dart';
 
-final localhostServer = InAppLocalhostServer();
+final localhostServer = InAppLocalhostServer(port: 51492);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
