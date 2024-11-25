@@ -1,20 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:threed_viewer/utils/strings.dart';
 
-class ModelViewer extends StatefulWidget {
+import '../../providers/providers.dart';
+
+class ModelViewer extends ConsumerWidget {
   const ModelViewer({super.key});
 
   @override
-  State<ModelViewer> createState() => _ModelViewerState();
-}
-
-class _ModelViewerState extends State<ModelViewer> {
-  @override
-  Widget build(BuildContext context) {
-    InAppWebViewController? webViewController;
-
+  Widget build(BuildContext context, WidgetRef ref) {
     late InAppWebViewSettings settings = InAppWebViewSettings(
       isInspectable: kDebugMode,
       mediaPlaybackRequiresUserGesture: false,
@@ -22,11 +18,6 @@ class _ModelViewerState extends State<ModelViewer> {
       iframeAllow: "camera; microphone",
       iframeAllowFullscreen: true,
     );
-
-    @override
-    void initState() {
-      super.initState();
-    }
 
     return Center(
       child: InAppWebView(
@@ -39,11 +30,11 @@ class _ModelViewerState extends State<ModelViewer> {
               '${AppStrings.localhostUrl}/assets/html/three_js_demo/index1.html'),
         ),
         onConsoleMessage: (controller, consoleMessage) {
-          print(consoleMessage);
+          print('Webview console message : $consoleMessage');
         },
         onWebViewCreated: (controller) async {
-          webViewController = controller;
-          print(webViewController!.platform);
+          ref.read(webViewControllerProvider.notifier).state = controller;
+          print(controller.platform);
         },
         onLoadStart: (controller, url) {
           print(url);

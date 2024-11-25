@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:menu_bar/menu_bar.dart';
+import 'package:threed_viewer/main.dart';
 import 'package:threed_viewer/pages/home/model_viewer.dart';
+import 'package:threed_viewer/providers/providers.dart';
 
-class Home extends StatelessWidget {
+class Home extends ConsumerWidget {
   Home({super.key});
 
   final List<Map<String, dynamic>> data = [
@@ -51,8 +54,8 @@ class Home extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    List<BarButton> barButtons = getBarButtons();
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<BarButton> barButtons = getBarButtons(ref);
 
     return MenuBarWidget(
       barButtons: barButtons,
@@ -71,7 +74,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  List<BarButton> getBarButtons() {
+  List<BarButton> getBarButtons(WidgetRef ref) {
     return [
       BarButton(
         text: Text('File'),
@@ -83,7 +86,7 @@ class Home extends StatelessWidget {
               ),
               icon: const Icon(Icons.import_export),
               onTap: () {
-                importFile();
+                importFile(ref);
               },
               shortcutText: 'Ctrl + I',
               shortcut: const SingleActivator(
@@ -125,12 +128,21 @@ class Home extends StatelessWidget {
     ];
   }
 
-  void importFile() async {
+  void importFile(WidgetRef ref) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
       File file = File(result.files.single.path!);
-      print('file Data : ${file.path}');
+
+      ref.read(filePathStateProvider.notifier).state = file.path;
+      String base64File = await fileToBase64Conversion(file);
+
+      // if (ref.read(webViewControllerProvider.notifier).state != null) return;
+      ref.read(webViewControllerProvider.notifier).state!.evaluateJavascript(
+        source: """
+            loadBase64Model('$base64File');
+          """,
+      );
     } else {
       // User canceled the picker
     }
