@@ -18,20 +18,3 @@ void main() async {
 
   runApp(const ThreedApp());
 }
-
-Future<String> saveFileToAppDirectory(String sourceFilePath) async {
-  final tempDir = await getApplicationDocumentsDirectory();
-  final file = File(sourceFilePath);
-  final fileName = file.uri.pathSegments.last;
-  final destinationPath = "${tempDir.path}/$fileName";
-  final resultPath =
-      await file.copy(destinationPath).then((copiedFile) => copiedFile.path);
-  print('Result : $resultPath');
-  return resultPath;
-}
-
-String fileToBase64Conversion(File file) {
-  final bytes = File(file.path).readAsBytesSync();
-  String base64EncodeFile = base64Encode(bytes);
-  return base64EncodeFile;
-}

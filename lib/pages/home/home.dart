@@ -1,11 +1,10 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:menu_bar/menu_bar.dart';
-import 'package:threed_viewer/main.dart';
+import 'package:threed_viewer/core/file_operation.dart';
 import 'package:threed_viewer/pages/home/model_viewer.dart';
 import 'package:threed_viewer/providers/providers.dart';
 
@@ -129,22 +128,25 @@ class Home extends ConsumerWidget {
   }
 
   void importFile(WidgetRef ref) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    List<File>? result = await FileOperation.pickFilesFromDevice();
 
-    if (result != null) {
-      File file = File(result.files.single.path!);
-
-      ref.read(filePathStateProvider.notifier).state = file.path;
-      String base64File = await fileToBase64Conversion(file);
-
-      // if (ref.read(webViewControllerProvider.notifier).state != null) return;
-      ref.read(webViewControllerProvider.notifier).state!.evaluateJavascript(
-        source: """
-            loadBase64Model('$base64File');
-          """,
-      );
-    } else {
-      // User canceled the picker
+    if (result.isEmpty) {
+      return;
     }
+    File file = File(result[0].path);
+
+    ref.read(filePathStateProvider.notifier).state = file.path;
+    // Read the file as bytes
+    Uint8List byteArray = await file.readAsBytes();
+
+    final jsByteArray =
+        byteArray.toList(); // Convert Uint8List to List for JS compatibility
+
+    // if (ref.read(webViewControllerProvider.notifier).state != null) return;
+    ref.read(webViewControllerProvider.notifier).state!.evaluateJavascript(
+      source: """
+            loadFileUsingByteArray(new Uint8Array(${jsByteArray.toString()}));
+          """,
+    );
   }
 }

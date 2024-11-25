@@ -48,37 +48,22 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-function loadGLTFModel(filePath) {
-    // Remove existing model from the scene (if needed)
-    scene.clear();
 
-    console.log('Scene cleared success',filePath);
-    // Load the new GLTF file
-    const loader = new THREE.GLTFLoader();
 
-    loader.load(filePath, function (gltf) {
-        scene.add(gltf.scene);
+function loadFileUsingByteArray(byteArray) {
+  console.log("byteArray", byteArray);
+  const blob = new Blob([byteArray], {type: "application/octet-stream"});
+  console.log("blob", blob);
+  const url = URL.createObjectURL(blob);
+  console.log("url", url);
+  scene.clear();
+
+  const gltfLoader = new THREE.GLTFLoader();
+    gltfLoader.load(url, function (gltf) {
+      scene.add(gltf.scene);
+    }, undefined, function (error) {
+      console.error('Error loading the GLTF model:', error);
     });
-    console.log('--------------------- Exit gltf ---------------------');
-}
-        
-// Function to load model from Base64
-function loadBase64Model(base64String) {
-    console.log("base 64 strign received", base64String);
-    const byteArray = new Uint8Array(atob(base64String).split('').map(function(c) { return c.charCodeAt(0); }));
-    console.log("byteArray", byteArray);
-    const blob = new Blob([byteArray], {type: "application/octet-stream"});
-    console.log("blob", blob);
-    const url = URL.createObjectURL(blob);
-    console.log("url", url);
-    scene.clear();
-
-    const gltfLoader = new THREE.GLTFLoader();
-      gltfLoader.load(url, function (gltf) {
-        scene.add(gltf.scene);
-      }, undefined, function (error) {
-        console.error('Error loading the GLTF model:', error);
-      });
 }
 
 animate();
