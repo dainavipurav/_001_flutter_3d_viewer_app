@@ -27,7 +27,7 @@ function setDefaultView(){
   // camera.position.set(0, 50, 200);
   camera.position.set(0, 1.5, 5);
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0xccccff);
+  renderer.setClearColor(0xffffff);
 }
 
 function loadfile(filePath){

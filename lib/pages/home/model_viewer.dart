@@ -19,33 +19,28 @@ class ModelViewer extends ConsumerWidget {
       iframeAllowFullscreen: true,
     );
 
-    return Center(
-      child: InAppWebView(
-        initialSettings: settings,
-        initialUrlRequest: URLRequest(
-          // url: WebUri('https://www.youtube.com'),
-          // url:
-          //     WebUri('${AppStrings.localhostUrl}/assets/html/hello_world.html'),
-          url: WebUri(
-              '${AppStrings.localhostUrl}/assets/html/three_js_demo/index1.html'),
-        ),
-        onConsoleMessage: (controller, consoleMessage) {
-          print('Webview console message : $consoleMessage');
-        },
-        onWebViewCreated: (controller) async {
-          ref.read(webViewControllerProvider.notifier).state = controller;
-          print(controller.platform);
-        },
-        onLoadStart: (controller, url) {
-          print(url);
-        },
-        onPermissionRequest: (controller, request) async {
-          return PermissionResponse(
-            resources: request.resources,
-            action: PermissionResponseAction.GRANT,
-          );
-        },
+    return InAppWebView(
+      initialSettings: settings,
+      initialUrlRequest: URLRequest(
+        url: WebUri(
+            '${AppStrings.localhostUrl}/assets/html/three_js_demo/index1.html'),
       ),
+      onConsoleMessage: (controller, consoleMessage) {
+        print('Webview console message : $consoleMessage');
+      },
+      onWebViewCreated: (controller) async {
+        ref.read(webViewControllerProvider.notifier).state = controller;
+        print(controller.platform);
+      },
+      onLoadStart: (controller, url) {
+        print(url);
+      },
+      onPermissionRequest: (controller, request) async {
+        return PermissionResponse(
+          resources: request.resources,
+          action: PermissionResponseAction.GRANT,
+        );
+      },
     );
   }
 }
