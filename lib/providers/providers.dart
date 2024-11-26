@@ -7,3 +7,23 @@ final filePathStateProvider = StateProvider<String>((ref) {
 
 final webViewControllerProvider =
     StateProvider<InAppWebViewController?>((ref) => null);
+
+// final fileRepositoryProvider = Provider(
+//   (ref) => FileRepository(),
+// );
+
+// final futureProvider = FutureProvider.family(
+//   (ref, arg) async {
+//     final repository = ref.watch(fileRepositoryProvider);
+//     final List<int> fileByteArray = await repository.importFileInByteArray();
+//     return fileByteArray;
+//   },
+// );
+
+final loadingValueProvider = StateProvider<bool>(
+  (ref) => false,
+);
+
+final errorValueProvider = StateProvider<String?>(
+  (ref) => null,
+);

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:menu_bar/menu_bar.dart';
 import 'package:threed_viewer/components/desktop_menu_bar.dart';
 import 'package:threed_viewer/core/file_operation.dart';
 import 'package:threed_viewer/pages/home/model_viewer.dart';
@@ -21,13 +20,15 @@ class Home extends ConsumerWidget {
         body: ModelViewer(),
       ),
     );
-
   }
 
   void importFile(WidgetRef ref) async {
+    ref.read(loadingValueProvider.notifier).state = true;
+
     List<File>? result = await FileOperation.pickFilesFromDevice();
 
     if (result.isEmpty) {
+      ref.read(loadingValueProvider.notifier).state = false;
       return;
     }
     File file = File(result[0].path);
@@ -45,5 +46,6 @@ class Home extends ConsumerWidget {
             loadFileFromDevice(new Uint8Array(${jsByteArray.toString()}));
           """,
     );
+    ref.read(loadingValueProvider.notifier).state = false;
   }
 }
