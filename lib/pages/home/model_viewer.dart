@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:threed_viewer/components/web_view_loader.dart';
 import 'package:threed_viewer/utils/strings.dart';
 
 import '../../providers/providers.dart';
@@ -32,10 +33,9 @@ class ModelViewer extends ConsumerWidget {
           },
           onWebViewCreated: (controller) async {
             ref.read(webViewControllerProvider.notifier).state = controller;
+            injectJsChannels(ref);
             print(controller.platform);
-          },
-          onLoadStart: (controller, url) {
-            print(url);
+            print('onWebViewCreated ${controller.getUrl()}');
           },
           onPermissionRequest: (controller, request) async {
             return PermissionResponse(
@@ -53,46 +53,9 @@ class ModelViewer extends ConsumerWidget {
             bottom: 0,
             child: ref.watch(errorValueProvider) != null
                 ? errorWidget(ref.watch(errorValueProvider)!)
-                : loadingWidget(),
+                : const WebViewLoader(),
           ),
       ],
-    );
-  }
-
-  Widget loadingWidget() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.blueGrey[200]!.withOpacity(0.98),
-            Colors.blueGrey[400]!.withOpacity(0.98),
-          ],
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(
-              child: CircularProgressIndicator(
-                color: Colors.blueGrey[300],
-                backgroundColor: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Flexible(
-              child: Text(
-                'Loading 3D Model',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -104,6 +67,32 @@ class ModelViewer extends ConsumerWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+
+  void injectJsChannels(WidgetRef ref) {
+    final webviewControllerState =
+        ref.read(webViewControllerProvider.notifier).state;
+
+    webviewControllerState!.addJavaScriptHandler(
+      handlerName: 'showLoader',
+      callback: (jsMessage) {
+        ref.read(loadingValueProvider.notifier).state = true;
+      },
+    );
+
+    webviewControllerState.addJavaScriptHandler(
+      handlerName: 'hideLoader',
+      callback: (jsMessage) {
+        ref.read(loadingValueProvider.notifier).state = false;
+      },
+    );
+
+    webviewControllerState.addJavaScriptHandler(
+      handlerName: 'setError',
+      callback: (jsMessage) {
+        ref.read(errorValueProvider.notifier).state = jsMessage[0];
+      },
     );
   }
 }

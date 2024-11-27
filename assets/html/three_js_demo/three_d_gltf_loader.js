@@ -31,6 +31,7 @@ function setDefaultView(){
 }
 
 function loadfile(filePath){
+  jsShowLoader();
   setDefaultView();
   // Ambient Light: Provides overall light to illuminate the model
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Color: White, Intensity: 0.5
@@ -52,9 +53,11 @@ function loadfile(filePath){
   gltfLoader.load(filePath, function (gltf) {
       scene.add(gltf.scene);
   });
+  jsHideLoader();
 }
 
 function loadFileFromDevice(byteArray) {
+  jsShowLoader();
   console.log("byteArray", byteArray);
   const blob = new Blob([byteArray], {type: "application/octet-stream"});
   console.log("blob", blob);
@@ -63,4 +66,5 @@ function loadFileFromDevice(byteArray) {
   scene.clear();
 
   loadfile(url);
+  jsHideLoader();
 }

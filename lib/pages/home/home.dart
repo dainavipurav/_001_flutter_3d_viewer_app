@@ -23,14 +23,12 @@ class Home extends ConsumerWidget {
   }
 
   void importFile(WidgetRef ref) async {
-    ref.read(loadingValueProvider.notifier).state = true;
-
     List<File>? result = await FileOperation.pickFilesFromDevice();
 
     if (result.isEmpty) {
-      ref.read(loadingValueProvider.notifier).state = false;
       return;
     }
+    ref.read(loadingValueProvider.notifier).state = true;
     File file = File(result[0].path);
 
     ref.read(filePathStateProvider.notifier).state = file.path;
@@ -42,10 +40,8 @@ class Home extends ConsumerWidget {
 
     // if (ref.read(webViewControllerProvider.notifier).state != null) return;
     ref.read(webViewControllerProvider.notifier).state!.evaluateJavascript(
-      source: """
-            loadFileFromDevice(new Uint8Array(${jsByteArray.toString()}));
-          """,
-    );
-    ref.read(loadingValueProvider.notifier).state = false;
+          source:
+              "loadFileFromDevice(new Uint8Array(${jsByteArray.toString()}));",
+        );
   }
 }
